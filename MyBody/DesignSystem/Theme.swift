@@ -30,6 +30,13 @@ enum Theme {
         static let heroBlue = LinearGradient(
             colors: [Color(hex: 0xDCEEF7), .white],
             startPoint: .topLeading, endPoint: .bottomTrailing)
+
+        /// RPE 颜色：≥9.5 红、≥9 黄、否则灰（规格 §2）。
+        static func rpeColor(_ rpe: Double) -> Color {
+            if rpe >= 9.5 { return danger }
+            if rpe >= 9 { return warning }
+            return textPrimary.opacity(0.5)
+        }
     }
 
     // MARK: 圆角

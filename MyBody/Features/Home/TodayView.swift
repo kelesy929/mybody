@@ -9,7 +9,7 @@ struct TodayView: View {
     @Query private var settingsList: [UserSettings]
 
     @State private var vm = TodayViewModel()
-    @State private var activeSession: WorkoutSession?
+    @State private var path: [WorkoutRoute] = []
 
     private var settings: UserSettings? { settingsList.first }
     /// 今日可开始的会话（planned/active）。
@@ -18,7 +18,7 @@ struct TodayView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.l) {
                     heroCard
@@ -33,9 +33,16 @@ struct TodayView: View {
             .background(Theme.Palette.background)
             .navigationTitle("")
             .toolbar { toolbarHeader }
-            .navigationDestination(item: $activeSession) { session in
-                // 训练记录页（下一阶段实现真实交互）。
-                ActiveWorkoutView(session: session)
+            .navigationDestination(for: WorkoutRoute.self) { route in
+                switch route {
+                case .active(let s):
+                    ActiveWorkoutView(session: s, path: $path)
+                case .evaluation(let s):
+                    EvaluationView(session: s, path: $path)
+                case .detail(let ex):
+                    ExerciseDetailView(exercise: ex, primaryTitle: "返回训练",
+                                       onPrimary: { if !path.isEmpty { path.removeLast() } })
+                }
             }
         }
         .onAppear { refresh() }
@@ -178,6 +185,6 @@ struct TodayView: View {
     private func startWorkout() {
         guard let session = todaySession else { return }
         session.status = .active
-        activeSession = session
+        path.append(.active(session))
     }
 }
