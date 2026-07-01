@@ -10,11 +10,10 @@ jobs:
   core-tests:
     name: MyBodyCore 单元测试 (Linux)
     runs-on: ubuntu-latest
+    # 直接用官方 Swift 镜像，免去 setup-swift 在新版 ubuntu-latest 上的兼容问题。
+    container: swift:5.10
     steps:
       - uses: actions/checkout@v4
-      - uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: "5.9"
       - name: swift test
         working-directory: MyBodyCore
         run: swift test
