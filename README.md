@@ -40,10 +40,32 @@ project.yml             # XcodeGen 配置（macOS 侧据此生成 .xcodeproj）
 
 本人全程只用 Windows，Mac 完全在云端（GitHub Actions）。
 
-## 生成并运行（在 macOS 上）
+## 在一台干净的 Mac（含云 Mac）上从零跑起来
 
-```
+前提：装好 **Xcode**（App Store 搜 Xcode，装完先打开一次同意协议）。
+
+```bash
+# 1. 装 Homebrew（若没有）
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 2. 装 XcodeGen
 brew install xcodegen
+
+# 3. 拉代码（公开仓库，HTTPS 免认证）
+git clone https://github.com/kelesy929/mybody.git
+cd mybody
+
+# 4. 生成 Xcode 工程并打开
 xcodegen generate
 open MyBody.xcodeproj
 ```
+
+在 Xcode 里：顶部选一个 **iPhone 模拟器**（如 iPhone 16）→ 按 **⌘R** 运行。
+**模拟器运行不需要 Apple Developer 账号、不用签名**。首次会自动解析本地 `MyBodyCore` 包。
+
+只想验证算法逻辑（不开 Xcode）：
+```bash
+cd MyBodyCore && swift test
+```
+
+装到真机 / 上 TestFlight 才需要 Apple Developer 账号与签名——见上一节。
