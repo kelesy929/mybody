@@ -39,6 +39,8 @@ struct TodayView: View {
                     ActiveWorkoutView(session: s, path: $path)
                 case .evaluation(let s):
                     EvaluationView(session: s, path: $path)
+                case .tomorrow(let s):
+                    TomorrowView(todaySession: s, path: $path)
                 case .detail(let ex):
                     ExerciseDetailView(exercise: ex, primaryTitle: "返回训练",
                                        onPrimary: { if !path.isEmpty { path.removeLast() } })

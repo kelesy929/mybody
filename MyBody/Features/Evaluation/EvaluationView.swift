@@ -166,10 +166,9 @@ struct EvaluationView: View {
         .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Theme.Palette.accent.opacity(0.4), lineWidth: 1))
     }
 
-    // MARK: 明日（阶段 ④ 实现真实编辑；当前先回今日）
+    // MARK: 明日训练
 
     private func goTomorrow() {
-        // TODO(阶段 4)：推入明日训练编辑页。当前先回到今日。
-        path.removeAll()
+        path.append(.tomorrow(session))
     }
 }
