@@ -169,6 +169,7 @@ private struct SetRowView: View {
                 .frame(width: 32, height: 32)
             }
             .buttonStyle(.plain)
+            .accessibilityIdentifier("set_done")
         }
         .padding(.vertical, 7)
         .opacity(set.isDone ? 1 : 0.9)

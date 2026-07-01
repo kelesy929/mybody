@@ -6,6 +6,7 @@ struct PrimaryButton: View {
     let title: String
     var background: Color = Theme.Palette.accent
     var foreground: Color = Theme.Palette.textPrimary
+    var accessibilityID: String? = nil
     let action: () -> Void
 
     var body: some View {
@@ -20,6 +21,7 @@ struct PrimaryButton: View {
                 .shadow(color: background.opacity(0.4), radius: 12, y: 6)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier(accessibilityID ?? title)
     }
 }
 

@@ -101,7 +101,7 @@ struct TodayView: View {
                 .padding(.top, 4)
 
             if vm.hero.hasSession {
-                PrimaryButton(title: "开始训练") { startWorkout() }
+                PrimaryButton(title: "开始训练", accessibilityID: "start_workout") { startWorkout() }
                     .padding(.top, 18)
             }
         }

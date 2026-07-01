@@ -25,7 +25,7 @@ struct EvaluationView: View {
                     statsGrid(r).padding(.top, 18)
                     reasonsSection(r).padding(.top, 22)
                     recommendationCard(r).padding(.top, 16)
-                    PrimaryButton(title: "查看明日训练 →") { goTomorrow() }
+                    PrimaryButton(title: "查看明日训练 →", accessibilityID: "go_tomorrow") { goTomorrow() }
                         .padding(.top, 18)
                 }
                 .padding(.horizontal, 20)

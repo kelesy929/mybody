@@ -1,0 +1,40 @@
+name: Screenshots
+
+# 在 macOS runner 上跑 UI 测试巡游各屏、截图，抽成 PNG 传成 artifact。
+# 你在 Actions 页面点进本次运行 → 底部 Artifacts → 下载 mybody-screenshots。
+on:
+  workflow_dispatch:            # 可在 Actions 页手动触发
+  push:
+    branches: [main]
+    paths:
+      - 'MyBody/**'
+      - 'MyBodyUITests/**'
+      - 'project.yml'
+
+jobs:
+  screenshots:
+    name: 截图巡游 (macOS)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 XcodeGen + xcparse
+        run: brew install xcodegen chargepoint/xcparse/xcparse
+      - name: 生成 Xcode 工程
+        run: xcodegen generate
+      - name: UI 测试截图
+        run: |
+          xcodebuild test \
+            -project MyBody.xcodeproj \
+            -scheme MyBody \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -resultBundlePath Result.xcresult \
+            CODE_SIGNING_ALLOWED=NO || true
+      - name: 从 xcresult 抽取 PNG
+        run: |
+          xcparse screenshots Result.xcresult ./screenshots || true
+          ls -la ./screenshots || echo "(no screenshots dir)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mybody-screenshots
+          path: screenshots/**
+          if-no-files-found: warn

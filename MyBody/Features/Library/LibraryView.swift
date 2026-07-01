@@ -47,6 +47,7 @@ struct LibraryView: View {
                         ForEach(filtered) { ex in
                             NavigationLink(value: ex) { row(ex) }
                                 .buttonStyle(.plain)
+                                .accessibilityIdentifier("lib_row")
                         }
                     }
                     .padding(.horizontal, 20)

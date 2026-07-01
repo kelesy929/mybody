@@ -140,7 +140,7 @@ struct ActiveWorkoutView: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
 
-            PrimaryButton(title: "完成训练 · 评估今天") { finish(vm) }
+            PrimaryButton(title: "完成训练 · 评估今天", accessibilityID: "finish_workout") { finish(vm) }
         }
         .padding(.horizontal, 16)
         .padding(.top, 10)
