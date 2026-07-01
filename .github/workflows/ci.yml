@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  # 纯逻辑层：跑在免费的 Linux runner 上，秒级反馈（评估/推荐/容量算法单测）。
+  # 这一层不需要 Apple Developer 账号、不需要签名，也能在 Windows 本地 `swift test`。
+  core-tests:
+    name: MyBodyCore 单元测试 (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "5.9"
+      - name: swift test
+        working-directory: MyBodyCore
+        run: swift test
+
+  # 整个 App：在 macOS runner 上用真 Xcode 编译 + 模拟器跑（验证 SwiftUI/SwiftData 那层）。
+  # 公开仓库免费；私有仓库 macOS 分钟数按 10x 计费。
+  app-build:
+    name: MyBody 编译 (macOS)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 XcodeGen
+        run: brew install xcodegen
+      - name: 生成 Xcode 工程
+        run: xcodegen generate
+      - name: 编译
+        run: |
+          xcodebuild build \
+            -project MyBody.xcodeproj \
+            -scheme MyBody \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            CODE_SIGNING_ALLOWED=NO | xcpretty || xcodebuild build \
+            -project MyBody.xcodeproj \
+            -scheme MyBody \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            CODE_SIGNING_ALLOWED=NO

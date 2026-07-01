@@ -1,0 +1,23 @@
+# Xcode / SwiftPM
+.DS_Store
+*.xcodeproj           # 由 XcodeGen 从 project.yml 生成，不入库
+!project.yml
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+.build/
+.swiftpm/
+
+# Fastlane / CI secrets
+*.p8
+*.p12
+*.mobileprovision
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/test_output/
+
+# 杂项
+*.log
+
+# 误置于此的另一个 App 原型（个人成长系统），非 MyBody
+Myself.dc.html
