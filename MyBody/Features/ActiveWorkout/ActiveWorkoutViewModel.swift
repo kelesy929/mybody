@@ -14,6 +14,9 @@ final class ActiveWorkoutViewModel {
     var restRemaining: Int?                  // nil = 当前无休息
     var expandedExerciseID: PersistentIdentifier?
 
+    /// 各动作历史最大重量（来自已完成会话），用于记录时提示 PR。
+    private let maxWeightByExercise: [String: Double]
+
     private var workoutTimer: Timer?
     private var restTimer: Timer?
 
@@ -27,6 +30,30 @@ final class ActiveWorkoutViewModel {
         self.context = context
         self.elapsedSec = session.durationSec
         self.expandedExerciseID = session.orderedExercises.first?.persistentModelID
+
+        // 预算各动作的历史最大重量（仅已完成会话，不含本次进行中的）。
+        var maxW: [String: Double] = [:]
+        let all = (try? context.fetch(FetchDescriptor<WorkoutSession>())) ?? []
+        for s in all where s.status == .done {
+            for ex in s.loggedExercises {
+                guard let name = ex.exercise?.name else { continue }
+                for set in ex.sets where set.isDone {
+                    maxW[name] = Swift.max(maxW[name] ?? 0, set.weight)
+                }
+            }
+        }
+        self.maxWeightByExercise = maxW
+    }
+
+    /// 该动作的历史最大重量（无则 nil）。
+    func historicalMax(for exerciseName: String) -> Double? { maxWeightByExercise[exerciseName] }
+
+    /// 把语音识别出的重量/次数写入该动作「第一组未完成」的组（无则末组）。
+    func applyVoice(_ spoken: SpokenSet, to ex: LoggedExercise) {
+        guard let set = ex.orderedSets.first(where: { !$0.isDone }) ?? ex.orderedSets.last else { return }
+        if let w = spoken.weight { set.weight = Swift.max(0, w) }
+        if let r = spoken.reps { set.reps = Swift.max(0, r) }
+        Haptics.light()
     }
 
     // MARK: 计时器

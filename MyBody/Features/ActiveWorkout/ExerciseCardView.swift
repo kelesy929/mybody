@@ -10,13 +10,17 @@ struct ExerciseCardView: View {
     let isExpanded: Bool
     let isEachSide: Bool
     let weightStep: Double
+    let historicalMax: Double?
 
     let onExpand: () -> Void
     let onOpenDetail: () -> Void
     let onAddSet: () -> Void
+    let onVoiceLog: () -> Void
     let onWeight: (SetEntry, Double) -> Void   // (set, direction ±1)
     let onReps: (SetEntry, Int) -> Void
     let onToggle: (SetEntry) -> Void
+
+    private var weightUnitLabel: String { unit.replacingOccurrences(of: "/侧", with: "") }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -71,6 +75,16 @@ struct ExerciseCardView: View {
 
     private var setTable: some View {
         VStack(spacing: 0) {
+            if let m = historicalMax {
+                HStack(spacing: 6) {
+                    Image(systemName: "trophy.fill").font(.system(size: 11))
+                    Text("历史最大 \(NumberFormat.trim(m)) \(weightUnitLabel)")
+                        .font(.system(size: 12, weight: .bold))
+                }
+                .foregroundStyle(Theme.Palette.accent)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 6)
+            }
             columnHeader
             ForEach(logged.orderedSets) { set in
                 SetRowView(set: set, showRPE: showRPE, weightStep: weightStep,
@@ -108,6 +122,17 @@ struct ExerciseCardView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
             }
             .buttonStyle(.plain)
+
+            Button(action: onVoiceLog) {
+                Image(systemName: "mic.fill")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Theme.Palette.accent)
+                    .frame(width: 44, height: 38)
+                    .background(Theme.Palette.accent.opacity(0.14))
+                    .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("voice_log")
 
             Button(action: onOpenDetail) {
                 Text("动作说明")

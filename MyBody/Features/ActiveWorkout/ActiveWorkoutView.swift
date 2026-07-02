@@ -11,6 +11,7 @@ struct ActiveWorkoutView: View {
     @Query private var settingsList: [UserSettings]
 
     @State private var vm: ActiveWorkoutViewModel?
+    @State private var voiceExercise: LoggedExercise?
 
     private var settings: UserSettings? { settingsList.first }
 
@@ -50,9 +51,11 @@ struct ActiveWorkoutView: View {
                             isExpanded: vm.isExpanded(logged),
                             isEachSide: logged.exercise?.isEachSide ?? false,
                             weightStep: logged.exercise?.weightStep ?? 2.5,
+                            historicalMax: vm.historicalMax(for: logged.exercise?.name ?? ""),
                             onExpand: { withAnimation(.easeInOut(duration: 0.2)) { vm.toggleExpand(logged) } },
                             onOpenDetail: { if let ex = logged.exercise { path.append(.detail(ex)) } },
                             onAddSet: { vm.addSet(to: logged) },
+                            onVoiceLog: { voiceExercise = logged },
                             onWeight: { set, dir in vm.changeWeight(set, step: logged.exercise?.weightStep ?? 2.5, dir) },
                             onReps: { set, d in vm.changeReps(set, d) },
                             onToggle: { set in vm.toggleDone(set) }
@@ -63,6 +66,11 @@ struct ActiveWorkoutView: View {
                 .padding(.vertical, 14)
             }
             bottomBar(vm)
+        }
+        .sheet(item: $voiceExercise) { ex in
+            VoiceLogSheet(exerciseName: ex.exercise?.name ?? "",
+                          unit: vm.unit.displayName,
+                          onApply: { spoken in vm.applyVoice(spoken, to: ex) })
         }
     }
 
